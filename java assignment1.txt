@@ -1,0 +1,58 @@
+import java.util.Scanner;
+
+public class CollegeAllotment {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        // Array of colleges based on CGPA range
+        String[] universities = {"Private College", "State University", "NIT", "IIT"};
+
+        // Taking user inputs
+        System.out.print("Enter Candidate Name: ");
+        String candidateName = sc.nextLine();
+
+        System.out.print("Enter Entrance Test Rank: ");
+        int rank = sc.nextInt();
+        sc.nextLine(); // Consume newline
+
+        System.out.print("Enter CGPA: ");
+        double cgpa = sc.nextDouble();
+        sc.nextLine(); // Consume newline
+
+        System.out.print("Enter Branch Choice: ");
+        String branch = sc.nextLine();
+
+        System.out.print("Enter Date of Joining: ");
+        String dateOfJoining = sc.nextLine();
+
+        System.out.print("Enter Address: ");
+        String address = sc.nextLine();
+
+        // Selecting the university based on CGPA
+        String university;
+        if (cgpa >= 9.0) {
+            university = universities[3]; // IIT
+        } else if (cgpa >= 8.0) {
+            university = universities[2]; // NIT
+        } else if (cgpa >= 7.0) {
+            university = universities[1]; // State University
+        } else {
+            university = universities[0]; // Private College
+        }
+
+        // Display College Allotment Order
+        System.out.println("\n*************************************");
+        System.out.println("           College Allotment Order");
+        System.out.println("*************************************");
+        System.out.println("Candidate Name  : " + candidateName);
+        System.out.println("Entrance Rank   : " + rank);
+        System.out.println("Branch          : " + branch);
+        System.out.println("Date of Joining : " + dateOfJoining);
+        System.out.println("Address         : " + address);
+        System.out.println("CGPA            : " + cgpa);
+        System.out.println("University      : " + university);
+        System.out.println("*************************************");
+
+        sc.close();
+    }
+}
