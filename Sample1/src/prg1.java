@@ -41,7 +41,7 @@ public class prg1
 {
 	public static void main(String args[])
 	{
-		Employee e = new Employee();
+//		Employee e = new Employee();
 //		Employee e = new Employee(9,"ram");
 //		Employee e = new Employee(3,"ram");
 		List<Employee> l = new ArrayList<>();
@@ -49,7 +49,7 @@ public class prg1
 		l.add(new Employee(9,"aghu"));
 		l.add(new Employee(3,"ash"));
 		l.add(new Employee(5,"gary"));
-		System.out.println(e.getId()+" "+e.getName());
+//		System.out.println(e.getId()+" "+e.getName());
 		System.out.println(l);
 		Collections.sort(l);
 		System.out.println(l);
