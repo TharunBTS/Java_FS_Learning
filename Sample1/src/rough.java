@@ -233,3 +233,13 @@ public class rough
 		
 	}
 }
+/*
+ * find out the highest orders in a year
+ * find out category wise orders count
+ * print max price from orders
+ * month wise avg spending details
+ * find out min order price from total orders
+ * first and last product purchased
+ * 
+ * */
+ 
