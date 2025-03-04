@@ -78,15 +78,20 @@ public class emp {
 	System.out.println("starts with");
 	li.stream().filter(c -> c.getName().startsWith("h")).forEach(val -> System.out.println(val.getName()));;
 	System.out.println("----------------------------");
+	
+	
 	System.out.println("joined >= 2020");
 	li.stream().filter(c -> c.getYear() >= 2020).forEach(val -> System.out.println(val.getName()+" - "+val.getYear()));;
 	System.out.println("----------------------------");
+	
+	
 	System.out.println("joined after 2020 and sorted using name and age and added to new List");
 	List<samp> res= li.stream()
 			.filter(c -> c.getYear() > 2020)
-			.sorted(Comparator.comparing(samp :: getName)
-			.thenComparing(samp :: getAge).reversed())
+			.sorted(Comparator.comparing(samp :: getName, Comparator.reverseOrder())
+			.thenComparing(samp :: getAge))
 			.collect(Collectors.toList());
 	System.out.println(res);
+
 	}
 }
