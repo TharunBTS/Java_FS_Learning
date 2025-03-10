@@ -17,25 +17,14 @@
 <body>
 
 
-<%
-
-try
-{
-	Class.forName("com.mysql.jdbc.Driver");
-	Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/jspdb","root","root@39");
-	String s = "select * from tb1";
-	PreparedStatement pst = conn.prepareStatement(s);
+<h1>Login Page</h1>
+	<form action="validate.jsp" method="post">
 	
-	 ResultSet rs = pst.executeQuery();
-	 out.println(rs);
+		UserName : <input type="text" name = "user"><br><br>
+		Enter Password : <input type="password" name="pwd"><br><br>
+		<input type="submit" value="Login"><br>
 	
-}
-catch(Exception e)
-{
-	
-}
-
-%>
+	</form>
 
 
 

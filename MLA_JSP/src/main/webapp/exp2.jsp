@@ -86,7 +86,9 @@ margin-right:10px">
 
 
 <% 
-
+HttpSession hs = request.getSession();
+String s = (String) hs.getAttribute("username");
+out.println(s);
 %>
 
 
