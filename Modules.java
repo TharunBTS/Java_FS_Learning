@@ -29,6 +29,9 @@ public class Modules {
         List<Fraud> Fraud = new ArrayList<>();
         List<CreditScore> CreditScore = new ArrayList<>();
         List<Kyc> Kyc  = new ArrayList<>();
+        List<InterestRate> InterestRate = new ArrayList<>();
+        List<FundTransfer> FundTransfer = new ArrayList<>();
+
 
 
 //        Map<String, FileHandler<?>> fileHandler = new HashMap<>();
@@ -47,7 +50,9 @@ public class Modules {
         listMap.put("CreditScore", CreditScore);
         listMap.put("Fraud", Fraud);
         listMap.put("Kyc", Kyc);
-//        listMap.put("Account", new ArrayList<Account>());
+        listMap.put("Transaction", Transaction);
+        listMap.put("InterestRate", InterestRate);
+        listMap.put("FundTransfer", FundTransfer);
 
 
         File controlFolder = new File("Control");
@@ -61,15 +66,12 @@ public class Modules {
                         {
                             String fileName = file.getName();
                             String className = fileName.replace(".txt","");
-                            String fullClassName = "model."+ className;
                             String baseName = className.replaceAll("\\d+$", "");
-                            System.out.println("class full name : "+baseName);
-                            Class<?> clazz = Class.forName(baseName);
+//                            System.out.println("class full name : "+baseName);
+                            Class<?> clazz = Class.forName("model."+baseName);
                             List<?> list = listMap.get(baseName);
                             if(list == null ) System.out.println(" no list found for key "+baseName);
-//                            FileHandler<?> handler = fileHandler.get(className);
-//                            listMap.putIfAbsent(className, new ArrayList<>());
-//                            List<Object> list = listMap.get(className);
+
                             readRawDetails(file,clazz,list);
                         }catch(Exception e)
                         {
@@ -91,6 +93,8 @@ public class Modules {
         System.out.println(CreditScore);
         System.out.println(Transaction);
         System.out.println(Kyc);
+        System.out.println(InterestRate);
+        System.out.println(FundTransfer);
 
 
 
@@ -169,62 +173,72 @@ public class Modules {
             if (annotation == null) continue;
 
             int length = annotation.value();
-
             StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < length && index < line.length(); i++, index++) {
-                sb.append(line.charAt(index));
+
+            if(component.getType().isRecord())
+            {
+//                RecordComponent[] subComponents = component.getType().getRecordComponents();
+//                for(RecordComponent subComponent : subComponents)
+//                {
+//
+//                }
+                String subline = line.substring(index,index+length);
+                sb.append(parseLineToRecord(subline,component.getClass()));
             }
+            else {
+                for (int i = 0; i < length && index < line.length(); i++, index++) {
+                    sb.append(line.charAt(index));
+                }
+            }
+
+
+
 
             String value = sb.toString().trim();
             Object parsedValue;
 
-            if(component.getType() == int.class)
-            {
-                parsedValue = Integer.parseInt(value);
+
+                if (component.getType() == int.class) {
+                    parsedValue = Integer.parseInt(value);
+
+                } else if (component.getType() == float.class) {
+                    parsedValue = Float.parseFloat(value);
+
+                } else if (component.getType() == short.class) {
+                    parsedValue = Short.parseShort(value);
+
+                } else if (component.getType() == boolean.class) {
+                    parsedValue = Boolean.parseBoolean(value);
+
+                } else if (component.getType() == double.class) {
+                    parsedValue = Double.parseDouble(value);
+
+                } else if (component.getType() == long.class) {
+                    parsedValue = Long.parseLong(value);
+
+                } else if (component.getType() == LocalDate.class) {
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+                    parsedValue = LocalDate.parse(value, formatter);
+
+                } else if (component.getType() == LocalTime.class) {
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+                    parsedValue = LocalTime.parse(value, formatter);
+                } else if (component.getType() == LocalDateTime.class) {
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+                    parsedValue = LocalDateTime.parse(value, formatter);
+                }
+                else if(component.getType() == Address.class)
+                {
+                    parsedValue =  value;
+                }
+                else {
+                    parsedValue = value;
+                }
+                parsedValues.add(parsedValue);
+
 
             }
-            else if(component.getType() == float.class)
-            {
-                parsedValue = Float.parseFloat(value);
 
-            }
-            else if(component.getType() == short.class)
-            {
-                parsedValue = Short.parseShort(value);
-
-            }
-            else if(component.getType() == boolean.class)
-            {
-                parsedValue = Boolean.parseBoolean(value);
-
-            }
-            else if(component.getType() == double.class)
-            {
-                parsedValue = Double.parseDouble(value);
-
-            }
-            else if (component.getType() == long.class) {
-                parsedValue = Long.parseLong(value);
-
-            }
-            else if (component.getType() == LocalDate.class) {
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-                parsedValue = LocalDate.parse(value, formatter);
-
-            }
-            else if (component.getType() == LocalTime.class) {
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-                parsedValue = LocalTime.parse(value, formatter);
-            }
-            else if (component.getType() == LocalDateTime.class) {
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-                parsedValue = LocalDateTime.parse(value, formatter);
-            }
-            else {
-                parsedValue = value;
-            }
-            parsedValues.add(parsedValue);
-        }
 
         Constructor<T> constructor = recordClass.getDeclaredConstructor(
                 Arrays.stream(components).map(RecordComponent::getType).toArray(Class<?>[]::new)
