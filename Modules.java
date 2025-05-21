@@ -42,11 +42,11 @@ public class Modules {
 
 
         Map<String , List<?>> listMap = new HashMap<>();
-        listMap.put("Account", new ArrayList<Account>());
-        listMap.put("Customer", new ArrayList<Customer>());
-        listMap.put("CreditScore", new ArrayList<CreditScore>());
-        listMap.put("Fraud", new ArrayList<Fraud>());
-        listMap.put("Kyc", new ArrayList<Kyc>());
+        listMap.put("Account", Account);
+        listMap.put("Customer", Customer);
+        listMap.put("CreditScore", CreditScore);
+        listMap.put("Fraud", Fraud);
+        listMap.put("Kyc", Kyc);
 //        listMap.put("Account", new ArrayList<Account>());
 
 
@@ -62,8 +62,9 @@ public class Modules {
                             String fileName = file.getName();
                             String className = fileName.replace(".txt","");
                             String fullClassName = "model."+ className;
-                            System.out.println("class full name : "+fullClassName);
-                            Class<?> clazz = Class.forName(className.substring(0,className.length()-2));
+                            String baseName = className.replaceAll("\\d+$", "");
+                            System.out.println("class full name : "+baseName);
+                            Class<?> clazz = Class.forName(baseName);
                             List<?> list = listMap.get(className);
 //                            FileHandler<?> handler = fileHandler.get(className);
 //                            listMap.putIfAbsent(className, new ArrayList<>());
@@ -89,6 +90,8 @@ public class Modules {
         System.out.println(CreditScore);
         System.out.println(Transaction);
         System.out.println(Kyc);
+
+
 
     }
 
