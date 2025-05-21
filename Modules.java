@@ -19,24 +19,35 @@ public class Modules {
 
 
 
+    @SuppressWarnings("unchecked")
     public void toPojo() {
 
 
-        List<Customer_Details> customerDetailsList = new ArrayList<>();
-        List<Account_Records> accountRecordsList = new ArrayList<>();
-        List<Transaction_Details> transactionDetailsList = new ArrayList<>();
-        List<Fraud_Details> fraudDetailsList = new ArrayList<>();
-        List<CreditScore_Details> creditScoreDetailsList = new ArrayList<>();
-        List<Kyc_Records> kycRecordsList  = new ArrayList<>();
+        List<Customer> Customer = new ArrayList<>();
+        List<Account> Account = new ArrayList<>();
+        List<Transaction> Transaction = new ArrayList<>();
+        List<Fraud> Fraud = new ArrayList<>();
+        List<CreditScore> CreditScore = new ArrayList<>();
+        List<Kyc> Kyc  = new ArrayList<>();
 
 
-        Map<String, FileHandler<?>> fileHandler = new HashMap<>();
-        fileHandler.put("customer.txt", new FileHandler<>(customerDetailsList, Customer_Details.class));
-        fileHandler.put("account.txt", new FileHandler<>(accountRecordsList, Account_Records.class));
-        fileHandler.put("fraud.txt", new FileHandler<>(fraudDetailsList, Fraud_Details.class));
-        fileHandler.put("creditScore.txt", new FileHandler<>(creditScoreDetailsList, CreditScore_Details.class));
-        fileHandler.put("transaction.txt", new FileHandler<>(transactionDetailsList, Transaction_Details.class));
-        fileHandler.put("kycFile.txt", new FileHandler<>(kycRecordsList, Kyc_Records.class));
+//        Map<String, FileHandler<?>> fileHandler = new HashMap<>();
+//        fileHandler.put("customer.txt", new FileHandler<>(customerDetailsList, Customer_D.class));
+//        fileHandler.put("account.txt", new FileHandler<>(accountRecordsList, Account.class));
+//        fileHandler.put("fraud.txt", new FileHandler<>(fraudDetailsList, Fraud_Details.class));
+//        fileHandler.put("creditScore.txt", new FileHandler<>(creditScoreDetailsList, CreditScore_Details.class));
+//        fileHandler.put("transaction.txt", new FileHandler<>(transactionDetailsList, Transaction_Details.class));
+//        fileHandler.put("kycFile.txt", new FileHandler<>(kycRecordsList, Kyc_Records.class));
+
+
+
+        Map<String , List<?>> listMap = new HashMap<>();
+        listMap.put("Account", new ArrayList<Account>());
+        listMap.put("Customer", new ArrayList<Customer>());
+        listMap.put("CreditScore", new ArrayList<CreditScore>());
+        listMap.put("Fraud", new ArrayList<Fraud>());
+        listMap.put("Kyc", new ArrayList<Kyc>());
+//        listMap.put("Account", new ArrayList<Account>());
 
 
         File controlFolder = new File("Control");
@@ -46,21 +57,35 @@ public class Modules {
                 File[] files = dateFolder.listFiles();
                 if (files != null) {
                     for (File file : files) {
-                        String fileName = file.getName();
-                        if (fileHandler.containsKey(fileName)) {
-                            FileHandler<?> handler = fileHandler.get(fileName);
-                            readDetails(file, handler);
+                        try
+                        {
+                            String fileName = file.getName();
+                            String className = fileName.replace(".txt","");
+                            String fullClassName = "model."+ className;
+                            Class<?> clazz = Class.forName(fullClassName);
+                            List<?> list = listMap.get(className);
+//                            FileHandler<?> handler = fileHandler.get(fileName);
+                            readDetails(file,clazz,list);
+                        }catch(Exception e)
+                        {
+                            System.out.println(e.getMessage());
                         }
+
+//                        if (fileHandler.containsKey(fileName)) {
+//                            FileHandler<?> handler = fileHandler.get(fileName);
+//                            readDetails(file, handler);
+//                        }
+
                     }
                 }
             }
         }
-        System.out.println(customerDetailsList);
-        System.out.println(accountRecordsList);
-        System.out.println(fraudDetailsList);
-        System.out.println(creditScoreDetailsList);
-        System.out.println(transactionDetailsList);
-        System.out.println(kycRecordsList);
+        System.out.println(Customer);
+        System.out.println(Fraud);
+        System.out.println(Account);
+        System.out.println(CreditScore);
+        System.out.println(Transaction);
+        System.out.println(Kyc);
 
     }
 
@@ -82,7 +107,7 @@ public class Modules {
 
 
 
-     static <T> void readDetails(File file,FileHandler<T> handler)
+     static <T> void readDetails(File file,Class<T> className,List<T> list)
     {
         try {
 
@@ -105,8 +130,8 @@ public class Modules {
                  }
 
 
-                T details = parseLineToRecord(line, handler.clazz);
-                handler.list.add(details);
+                T details = parseLineToRecord(line, className);
+                list.add(details);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -137,45 +162,47 @@ public class Modules {
             if(component.getType() == int.class)
             {
                 parsedValue = Integer.parseInt(value);
-//                System.out.println(parsedValue);
+
+            }
+            else if(component.getType() == float.class)
+            {
+                parsedValue = Float.parseFloat(value);
+
             }
             else if(component.getType() == short.class)
             {
                 parsedValue = Short.parseShort(value);
-//                System.out.println(parsedValue);
+
             }
             else if(component.getType() == boolean.class)
             {
                 parsedValue = Boolean.parseBoolean(value);
-//                System.out.println(parsedValue);
+
             }
             else if(component.getType() == double.class)
             {
                 parsedValue = Double.parseDouble(value);
-//                System.out.println(parsedValue);
+
             }
             else if (component.getType() == long.class) {
                 parsedValue = Long.parseLong(value);
-//                System.out.println(parsedValue);
+
             }
             else if (component.getType() == LocalDate.class) {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
                 parsedValue = LocalDate.parse(value, formatter);
-//                System.out.println(parsedValue);
+
             }
             else if (component.getType() == LocalTime.class) {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
                 parsedValue = LocalTime.parse(value, formatter);
-//                System.out.println(parsedValue);
             }
             else if (component.getType() == LocalDateTime.class) {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
                 parsedValue = LocalDateTime.parse(value, formatter);
-//                System.out.println(parsedValue);
             }
             else {
                 parsedValue = value;
-//                System.out.println(parsedValue);
             }
             parsedValues.add(parsedValue);
         }
@@ -183,8 +210,6 @@ public class Modules {
         Constructor<T> constructor = recordClass.getDeclaredConstructor(
                 Arrays.stream(components).map(RecordComponent::getType).toArray(Class<?>[]::new)
         );
-//        System.out.println(constructor.newInstance(parsedValues.toArray()));
-//        System.out.println(parsedValues);
         return constructor.newInstance(parsedValues.toArray());
 
     }
