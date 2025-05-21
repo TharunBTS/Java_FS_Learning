@@ -19,7 +19,7 @@ public class Modules {
 
 
 
-    @SuppressWarnings("unchecked")
+
     public void toPojo() {
 
 
@@ -62,10 +62,13 @@ public class Modules {
                             String fileName = file.getName();
                             String className = fileName.replace(".txt","");
                             String fullClassName = "model."+ className;
-                            Class<?> clazz = Class.forName(fullClassName);
+                            System.out.println("class full name : "+fullClassName);
+                            Class<?> clazz = Class.forName(className.substring(0,className.length()-2));
                             List<?> list = listMap.get(className);
-//                            FileHandler<?> handler = fileHandler.get(fileName);
-                            readDetails(file,clazz,list);
+//                            FileHandler<?> handler = fileHandler.get(className);
+//                            listMap.putIfAbsent(className, new ArrayList<>());
+//                            List<Object> list = listMap.get(className);
+                            readRawDetails(file,clazz,list);
                         }catch(Exception e)
                         {
                             System.out.println(e.getMessage());
@@ -90,19 +93,23 @@ public class Modules {
     }
 
 
+    @SuppressWarnings("unchecked")
+   private <T> void readRawDetails(File file, Class<?> rawClass, List<?> rawList)
+   {
+       readDetails(file,(Class<T>) rawClass,(List<T>) rawList);
+   }
 
-
-    static class FileHandler<T>
-    {
-        List<T> list;
-        Class<T> clazz;
-
-        FileHandler(List<T> list, Class<T> clazz)
-        {
-            this.list = list;
-            this.clazz = clazz;
-        }
-    }
+//    static class FileHandler<T>
+//    {
+//        List<T> list;
+//        Class<T> clazz;
+//
+//        FileHandler(List<T> list, Class<T> clazz)
+//        {
+//            this.list = list;
+//            this.clazz = clazz;
+//        }
+//    }
 
 
 
@@ -210,6 +217,7 @@ public class Modules {
         Constructor<T> constructor = recordClass.getDeclaredConstructor(
                 Arrays.stream(components).map(RecordComponent::getType).toArray(Class<?>[]::new)
         );
+
         return constructor.newInstance(parsedValues.toArray());
 
     }
