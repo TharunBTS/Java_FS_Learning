@@ -65,7 +65,8 @@ public class Modules {
                             String baseName = className.replaceAll("\\d+$", "");
                             System.out.println("class full name : "+baseName);
                             Class<?> clazz = Class.forName(baseName);
-                            List<?> list = listMap.get(className);
+                            List<?> list = listMap.get(baseName);
+                            if(list == null ) System.out.println(" no list found for key "+baseName);
 //                            FileHandler<?> handler = fileHandler.get(className);
 //                            listMap.putIfAbsent(className, new ArrayList<>());
 //                            List<Object> list = listMap.get(className);
@@ -99,6 +100,14 @@ public class Modules {
     @SuppressWarnings("unchecked")
    private <T> void readRawDetails(File file, Class<?> rawClass, List<?> rawList)
    {
+       if(rawClass == null)
+       {
+           System.out.println("raw class is null");
+       }
+       if(rawList == null)
+       {
+           System.out.println("raw list is null");
+       }
        readDetails(file,(Class<T>) rawClass,(List<T>) rawList);
    }
 
@@ -144,7 +153,7 @@ public class Modules {
                 list.add(details);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
     }
 
